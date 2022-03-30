@@ -1,0 +1,6 @@
+/buildout.cfg
+/custom.cfg
+/etc/*
+/py3?
+/src/*
+/var/*
