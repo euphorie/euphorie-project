@@ -1,6 +1,12 @@
+/.installed.cfg
+/.mr.developer.cfg
+/bin/
 /buildout.cfg
 /custom.cfg
+/develop-eggs/
+/eggs/
 /etc/*
+/parts/
 /py3?
 /src/*
 /var/*
