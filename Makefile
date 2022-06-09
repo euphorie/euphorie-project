@@ -5,6 +5,7 @@ py38/bin/pip3.8:
 	python3.8 -m venv py38
 
 py38/bin/buildout: py38/bin/pip3.8 requirements.txt
+	./py38/bin/pip3.8 uninstall -y setuptools
 	./py38/bin/pip3.8 install -IUr requirements.txt
 
 .installed.cfg: py38/bin/buildout $(wildcard *.cfg config/*.cfg profiles/*.cfg)
