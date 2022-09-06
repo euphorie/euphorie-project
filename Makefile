@@ -1,15 +1,15 @@
 .PHONY: all
 all: .installed.cfg
 
-py38/bin/pip3.8:
-	python3.8 -m venv py38
+py3/bin/pip3.8:
+	python3.8 -m venv py3
 
-py38/bin/buildout: py38/bin/pip3.8 requirements.txt
-	./py38/bin/pip3.8 uninstall -y setuptools
-	./py38/bin/pip3.8 install -IUr requirements.txt
+py3/bin/buildout: py3/bin/pip3.8 requirements.txt
+	./py3/bin/pip3.8 uninstall -qy setuptools
+	./py3/bin/pip3.8 install -qIUr requirements.txt
 
-.installed.cfg: py38/bin/buildout $(wildcard *.cfg config/*.cfg profiles/*.cfg)
-	./py38/bin/buildout
+.installed.cfg: py3/bin/buildout $(wildcard *.cfg config/*.cfg profiles/*.cfg)
+	./py3/bin/buildout
 
 .PHONY: upgrade
 upgrade:
@@ -17,7 +17,7 @@ upgrade:
 
 .PHONY: clean
 clean:
-	rm -rf ./py38
+	rm -rf ./py3
 
 .PHONY: read_registry
 read_registry: .installed.cfg
