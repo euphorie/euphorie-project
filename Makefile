@@ -38,7 +38,7 @@ alembic-upgrade: .installed.cfg
 
 .PHONY: restart
 restart:
-	./bin/supervisord || ( ./bin/supervisorctl reread && ./bin/supervisorctl restart all)
+	./bin/supervisord 2> /dev/null || ( ./bin/supervisorctl reread && ./bin/supervisorctl restart all)
 
 .PHONY: graceful
 graceful: .installed.cfg
