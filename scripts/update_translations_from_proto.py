@@ -43,7 +43,7 @@ for lang in proto_po_dict:
             # Iterate over each entry in the po file and update the translation if the message_id matches.
             for entry in po:
                 if entry.msgid in proto_entries_dict:
-                    if entry.msgstr != proto_entries_dict[entry.msgid]:
+                    if proto_entries_dict[entry.msgid] and entry.msgstr != proto_entries_dict[entry.msgid]:
                         update_counter += 1
                         entry.msgstr = proto_entries_dict[entry.msgid]
             # Save the updated po file.
