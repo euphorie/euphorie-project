@@ -14,7 +14,7 @@ buildout_cfgs := $(wildcard *.cfg config/*.cfg profiles/*.cfg)
 
 .PHONY: upgrade
 upgrade:
-	./bin/upgrade plone_upgrade -S &&  ./bin/upgrade install -Sp
+	./bin/upgrade plone_upgrade -A &&  ./bin/upgrade install -Ap
 
 .PHONY: clean
 clean:
