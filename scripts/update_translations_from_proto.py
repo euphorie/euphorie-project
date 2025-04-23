@@ -6,49 +6,79 @@ The script assumes
 """
 import os
 import polib
+import yaml
 
-i18n_proto = 'src/plonestatic.euphorie/var/prototype/_site/assets/oira/i18n'
+oira_yaml_path = 'src/plonestatic.euphorie/var/prototype/_data/oira/ui.yaml'
+patterns_yaml_path = 'src/plonestatic.euphorie/var/prototype/_data/patterns/ui.yaml'
+
+# Load and parse the oira YAML file
+with open(oira_yaml_path, 'r', encoding='utf-8') as oira_file:
+    oira_data = yaml.safe_load(oira_file)
+
+# Load and parse the patterns YAML file
+with open(patterns_yaml_path, 'r', encoding='utf-8') as patterns_file:
+    patterns_data = yaml.safe_load(patterns_file)
+
+# oira_data takes precendence over patterns_data
+proto_data = {**patterns_data, **oira_data}
+
+
 i18n_euphorie = 'src/Euphorie/src/euphorie/deployment/locales'
+LANGS = []
 
-# Quick statistics
-# Check the i18n_proto directory, list and print all languages and the corresponding file size.
-# Afterwards print the date when this repository was last updated.
-print('Proto:')
-for file in os.listdir(i18n_proto):
-    if file.endswith('.po'):
-        print(f'{file}: {os.path.getsize(f"{i18n_proto}/{file}")}')
-print(f'Last updated: {os.path.getmtime(i18n_proto)}')  # noqa
+# Iterate over all lang in i18n_euphorie
+for lang in os.listdir(i18n_euphorie):
+    lang_path = os.path.join(i18n_euphorie, lang, 'LC_MESSAGES', 'euphorie.po')
+    if os.path.isfile(lang_path):
+        LANGS.append(lang)
+        euphorie_po = polib.pofile(lang_path)
+        update_counter = 0
+        add_counter = 0
+        was_empty_counter = 0
+        all_good_counter = 0
 
+        for entry in proto_data:
+            # Check if the entry is not in the po file
+            poentry = euphorie_po.find(entry)
 
-proto_po_dict = {}
-# Iterate over each po file in the i18n_proto directory, load the file using polib.
-# Then store each pofile insteance in proto_po_dict with the language as the key.
-for file in os.listdir(i18n_proto):
-    if file.endswith('.po'):
-        po = polib.pofile(f'{i18n_proto}/{file}')
-        proto_po_dict[file.split('.')[0]] = po
+            if proto_data[entry].get(lang, '') in (True, False):
+                # the yaml parser interprets literally, so we need quotes
+                print(f"YAML parser fun - quotes needed at {entry}!")
+                breakpoint()
 
-# Iterate over all languages in the proto_po_dict
-# For each language, access the language folder within the i18n_euphorie directory and enter the LC_MESSAGES directory within.
-# For each po file in the LC_MESSAGES directory, load the file using polib.
-for lang in proto_po_dict:
-    # Load all proto messages for that language into a dict for faster lookup.
-    proto_entries_dict = {
-        entry.msgid: entry.msgstr for entry in proto_po_dict[lang]}
+            if poentry and '${' in poentry.msgstr:
+                # euphorie has a variable in the msgstr. Skip
+                continue
+            if proto_data[entry].get(lang, '') == '':
+                # proto has nothing. Skip
+                continue
+            if not poentry:
+                # euphorie doesn't have it. Add the entry to the po file
+                euphorie_po.append(polib.POEntry(
+                    msgid=entry,
+                    msgstr=proto_data[entry].get(lang, '')
+                ))
+                add_counter += 1
+            elif proto_data[entry].get(lang, '') == poentry.msgstr:
+                # euphorie and proto agree
+                all_good_counter += 1
+                continue
+            elif poentry.msgstr == '':
+                # euphorie was empty but proto has something. Add proto to euphorie
+                was_empty_counter += 1
+            else:
+                # euphorie had a different value from proto. Update euphorie
+                print(
+                    f'>> {entry} << {poentry.msgstr} ~> {proto_data[entry].get(lang)}')
+                poentry.msgstr = proto_data[entry].get(lang, '')
+                update_counter += 1
 
-    for file in os.listdir(f'{i18n_euphorie}/{lang}/LC_MESSAGES'):
-        if file.endswith('.po'):
-            update_counter = 0
-            po = polib.pofile(f'{i18n_euphorie}/{lang}/LC_MESSAGES/{file}')
-            # Iterate over each entry in the po file and update the translation if the message_id matches.
-            for entry in po:
-                if entry.msgid in proto_entries_dict:
-                    if proto_entries_dict[entry.msgid] and entry.msgstr != proto_entries_dict[entry.msgid]:
-                        update_counter += 1
-                        entry.msgstr = proto_entries_dict[entry.msgid]
-            # Save the updated po file.
-            po.save(f'{i18n_euphorie}/{lang}/LC_MESSAGES/{file}')
-            print(
-                f'Updated {update_counter} entries in Euphorie {file} for {lang}')
+        # Save the updated po file
+        euphorie_po.save(lang_path)
+        print(f'in euphorie.po for {lang}:')
+        print(f'- Added {add_counter} ')
+        print(f'- All good {all_good_counter} ')
+        print(f'- Was empty {was_empty_counter} ')
+        print(f'- Updated {update_counter} ')
 
-print('Done')
+        print('Done')
