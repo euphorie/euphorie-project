@@ -1,8 +1,56 @@
-""" This script pulls the latest translations from prototype po files and updates the translations in the Euphorie package whenever there is a matching message_id.
+""" Take over proto translations to dev
+
+This script pulls the latest translations from prototype po files and updates 
+the translations in the Euphorie package whenever there is a matching message_id.
+
 The script assumes
 - Euphorie and plonestatic.euphorie to be checked out in the src directory.
 - prototype to be recently updated so that the po files there are up to date.
 - that it gets called from within the buildout directory.
+
+NOTE: 
+It is possible that we are not using the correct message ids in dev, so even 
+if proto has a translation, it might not show in the UI of dev until we make that markup change.
+
+EXPLANATION:
+This Python script updates translation files for a project using data from two YAML files. 
+Here’s a step-by-step summary:
+
+YAML Loading:
+
+Loads two YAML files from protoype: one for "oira" UI strings and one for "patterns" UI strings.
+Parses both files into Python dictionaries for easy lookup.
+
+Data Merging:
+
+Merges the two dictionaries, with "oira" data taking precedence over "patterns" data for overlapping keys.
+
+Translation Directory Setup:
+
+Sets the path to the directory containing translation files (.po files) for different languages.
+
+Language Iteration:
+
+Iterates through each language directory in the translations folder.
+For each language, loads the corresponding .po file if it exists.
+
+Translation Entry Processing:
+
+For each key in the merged YAML data, checks if it exists in the .po file.
+If the translation value for the current language is a boolean (True or False), it prints a message and triggers a debugger breakpoint (likely for debugging YAML parsing issues).
+
+In summary:
+The script is designed to synchronize translation entries between YAML source files and .po translation files, ensuring that all UI strings from the YAML files are present in the translation files for each language. It also helps debug issues where YAML values are not properly quoted, leading to boolean values instead of strings.
+
+After running, all translations in proto should be copied over to the Euphorie package.
+
+NOTE:
+This might result in translations in the po files which are not used in dev because dev might not use all the message IDs that proto has. That is not a problem.
+
+WHEN TO USE:
+Each time we prepare a deployment, we should run this script so that we ensure that the latest translations from the prototype are reflected in the Euphorie package.
+
+We also should compare proto and dev and identify the places where dev isn't using the same message IDs as proto, so that we can update the markup in dev to use the same message IDs as proto.
 """
 import os
 import polib
