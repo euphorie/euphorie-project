@@ -91,7 +91,7 @@ for lang in os.listdir(i18n_euphorie):
 
             if proto_data[entry].get(lang, '') in (True, False):
                 # the yaml parser interprets literally, so we need quotes
-                print(f"YAML parser fun - quotes needed at {entry}!")
+                print(f"YAML parser fun - quotes needed at '{entry}'! (Find that msg_id in the po file and add quotes around the value)")
                 breakpoint()
 
             if poentry and '${' in poentry.msgstr:
