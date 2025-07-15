@@ -1,16 +1,20 @@
 .PHONY: all
 all: .installed.cfg
+	@if [ -d py3 ]; then \
+		echo "You have a py3 virtualenv in this directory. Please remove it as we are now using .venv."; \
+		echo "Run 'rm -rf py3' to remove it."; \
+	fi
 
-py3/bin/pip:
-	python3 -m venv py3
+.venv/bin/pip:
+	python3 -m venv .venv
 
-py3/bin/buildout: py3/bin/pip requirements.txt
-	./py3/bin/pip uninstall -qy setuptools
-	./py3/bin/pip install -qIUr requirements.txt
+.venv/bin/buildout: .venv/bin/pip requirements.txt
+	./.venv/bin/pip uninstall -qy setuptools
+	./.venv/bin/pip install -qIUr requirements.txt
 
 buildout_cfgs := $(wildcard *.cfg config/*.cfg profiles/*.cfg)
-.installed.cfg: py3/bin/buildout $(buildout_cfgs)
-	./py3/bin/buildout
+.installed.cfg: .venv/bin/buildout $(buildout_cfgs)
+	./.venv/bin/buildout
 
 .PHONY: upgrade
 upgrade:
@@ -18,7 +22,7 @@ upgrade:
 
 .PHONY: clean
 clean:
-	rm -rf ./py3
+	rm -rf ./.venv
 
 .PHONY: read_registry
 read_registry: .installed.cfg
