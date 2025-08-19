@@ -9,14 +9,15 @@
 [settings]
 main-package = your.euphorie.flavour
 ```
+For convenience, ``config/custom.cfg`` provides a working custom.cfg you can copy.
 
-1. Create a buildout.cfg, you can symlink one in the `profiles` folder, e.g.:
+2. Create a buildout.cfg, you can symlink one in the `profiles` folder, e.g.:
 
 ```bash
 ln -s profiles/development.cfg buildout.cfg
 ```
 
-1. Run `make`
+3. Run `make`
 
 ## Setup alembic table on a fresh DB:
 
