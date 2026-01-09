@@ -1,7 +1,9 @@
 /.installed.cfg
 /.mr.developer.cfg
+/.venv/
 /bin/
 /buildout.cfg
+/custom.*~
 /custom.cfg
 /develop-eggs/
 /eggs/
