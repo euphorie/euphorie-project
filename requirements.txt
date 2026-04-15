@@ -1,1 +1,15 @@
--r https://dist.plone.org/release/6.1.4/requirements.txt
+# -r https://dist.plone.org/release/6.1.4/requirements.txt
+# We need to override the default requirements to better handle the switch to native namespaces
+horse-with-no-namespace==20260202.0
+packaging==25.0
+pip==25.3
+setuptools==80.9.0
+wheel==0.45.1
+zc.buildout==5.1.1
+
+# Windows specific down here (has to be installed here, fails in buildout)
+# Dependency of zope.sendmail:
+pywin32 ; platform_system == 'Windows'
+
+# SSL Certs on windows, because Python is missing them otherwise:
+certifi ; platform_system == 'Windows'
