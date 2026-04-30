@@ -1,5 +1,12 @@
 """ Take over proto translations to dev
 
+Short installation/usage instructions:
+
+* create a venv
+* activate it
+* `pip install polib pyyaml`
+* `python scripts/update_translations_from_proto.py`
+
 This script pulls the latest translations from prototype po files and updates
 the translations in the Euphorie package whenever there is a matching message_id.
 
