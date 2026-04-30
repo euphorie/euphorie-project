@@ -108,41 +108,45 @@ for lang in sorted(os.listdir(i18n_euphorie)):
             if not proto_msgstr:
                 # proto has nothing. Could be empty string or None (null). Skip
                 continue
+            poentries = [poentry]
             proto_english = proto_data[entry].get('en')
             # Euphorie may be using a different msgid with the same Default.
             poentry_default = euphorie_po.find(
                 f'Default: "{proto_english}"', by="comment"
             )
-            if poentry_default and poentry and poentry_default.occurrences and not poentry.occurrences:
-                print(f"Warning: two msgids for same text: Proto='{entry}' / Euphorie='{poentry_default.msgid}' Default='{proto_english}'")
-            if not poentry:
-                # euphorie doesn't have it.
-                # It might be there in an obsolete comment.  Remove that one
-                # to avoid errors when checking the po file for inconsistencies.
-                obsolete = euphorie_po.find(entry, include_obsolete_entries=True)
-                if obsolete is not None:
-                    euphorie_po.remove(obsolete)
+            if poentry_default and poentry_default.msgid not in proto_data:
+                poentries.append(poentry_default)
+                if poentry and poentry_default.occurrences and not poentry.occurrences:
+                    print(f"Warning: two msgids for same text: Proto='{entry}' / Euphorie='{poentry_default.msgid}' Default='{proto_english}'")
+            for poentry in poentries:
+                if not poentry:
+                    # euphorie doesn't have it.
+                    # It might be there in an obsolete comment.  Remove that one
+                    # to avoid errors when checking the po file for inconsistencies.
+                    obsolete = euphorie_po.find(entry, include_obsolete_entries=True)
+                    if obsolete is not None:
+                        euphorie_po.remove(obsolete)
 
-                # Add the entry to the po file
-                euphorie_po.append(polib.POEntry(
-                    msgid=entry,
-                    msgstr=proto_msgstr
-                ))
-                add_counter += 1
-            elif proto_data[entry].get(lang, '') == poentry.msgstr:
-                # euphorie and proto agree
-                all_good_counter += 1
-                continue
-            elif poentry.msgstr == '':
-                # euphorie was empty but proto has something. Add proto to euphorie
-                poentry.msgstr = proto_data[entry].get(lang, '')
-                was_empty_counter += 1
-            else:
-                # euphorie had a different value from proto. Update euphorie
-                print(
-                    f'>> {entry} << {poentry.msgstr} ~> {proto_data[entry].get(lang)}')
-                poentry.msgstr = proto_data[entry].get(lang, '')
-                update_counter += 1
+                    # Add the entry to the po file
+                    euphorie_po.append(polib.POEntry(
+                        msgid=entry,
+                        msgstr=proto_msgstr
+                    ))
+                    add_counter += 1
+                elif proto_data[entry].get(lang, '') == poentry.msgstr:
+                    # euphorie and proto agree
+                    all_good_counter += 1
+                    continue
+                elif poentry.msgstr == '':
+                    # euphorie was empty but proto has something. Add proto to euphorie
+                    poentry.msgstr = proto_data[entry].get(lang, '')
+                    was_empty_counter += 1
+                else:
+                    # euphorie had a different value from proto. Update euphorie
+                    print(
+                        f'>> {entry} << {poentry.msgstr} ~> {proto_data[entry].get(lang)}')
+                    poentry.msgstr = proto_data[entry].get(lang, '')
+                    update_counter += 1
 
         # Save the updated po file
         euphorie_po.save(lang_path)
