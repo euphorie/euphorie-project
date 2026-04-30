@@ -59,6 +59,8 @@ Each time we prepare a deployment, we should run this script so that we ensure t
 
 We also should compare proto and dev and identify the places where dev isn't using the same message IDs as proto, so that we can update the markup in dev to use the same message IDs as proto.
 """
+from collections import Counter
+
 import os
 import polib
 import yaml
@@ -77,6 +79,11 @@ with open(patterns_yaml_path, 'r', encoding='utf-8') as patterns_file:
 # oira_data takes precendence over patterns_data
 proto_data = {**patterns_data, **oira_data}
 
+# Check which Proto msgids share the same text.
+# For example, there are three msgids for the text 'Search'.
+counter = Counter([item.get('en') for item in proto_data.values() if item.get('en')])
+names = [name for (name, count) in counter.items() if count > 1]
+duplicates = sorted(filter(None, names))
 
 i18n_euphorie = 'src/Euphorie/src/euphorie/deployment/locales'
 LANGS = []
@@ -111,13 +118,15 @@ for lang in sorted(os.listdir(i18n_euphorie)):
             poentries = [poentry]
             proto_english = proto_data[entry].get('en')
             # Euphorie may be using a different msgid with the same Default.
-            poentry_default = euphorie_po.find(
-                f'Default: "{proto_english}"', by="comment"
-            )
-            if poentry_default and poentry_default.msgid not in proto_data:
-                poentries.append(poentry_default)
-                if poentry and poentry_default.occurrences and not poentry.occurrences:
-                    print(f"Warning: two msgids for same text: Proto='{entry}' / Euphorie='{poentry_default.msgid}' Default='{proto_english}'")
+            # Only consider this when Proto has only one msgid with this Default.
+            if proto_english and proto_english not in duplicates:
+                poentry_default = euphorie_po.find(
+                    f'Default: "{proto_english}"', by="comment"
+                )
+                if poentry_default and poentry_default.msgid not in proto_data:
+                    poentries.append(poentry_default)
+                    if poentry and poentry_default.occurrences and not poentry.occurrences:
+                        print(f"Warning: two msgids for same text: Proto='{entry}' / Euphorie='{poentry_default.msgid}' Default='{proto_english}'")
             for poentry in poentries:
                 if not poentry:
                     # euphorie doesn't have it.
