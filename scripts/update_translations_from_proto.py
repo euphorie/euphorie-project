@@ -75,7 +75,7 @@ i18n_euphorie = 'src/Euphorie/src/euphorie/deployment/locales'
 LANGS = []
 
 # Iterate over all lang in i18n_euphorie
-for lang in os.listdir(i18n_euphorie):
+for lang in sorted(os.listdir(i18n_euphorie)):
     lang_path = os.path.join(i18n_euphorie, lang, 'LC_MESSAGES', 'euphorie.po')
     if os.path.isfile(lang_path):
         LANGS.append(lang)
