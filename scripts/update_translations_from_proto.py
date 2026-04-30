@@ -102,7 +102,14 @@ for lang in sorted(os.listdir(i18n_euphorie)):
                 # proto has nothing. Could be empty string or None (null). Skip
                 continue
             if not poentry:
-                # euphorie doesn't have it. Add the entry to the po file
+                # euphorie doesn't have it.
+                # It might be there in an obsolete comment.  Remove that one
+                # to avoid errors when checking the po file for inconsistencies.
+                obsolete = euphorie_po.find(entry, include_obsolete_entries=True)
+                if obsolete is not None:
+                    euphorie_po.remove(obsolete)
+
+                # Add the entry to the po file
                 euphorie_po.append(polib.POEntry(
                     msgid=entry,
                     msgstr=proto_msgstr
