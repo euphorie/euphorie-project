@@ -12,7 +12,12 @@ the translations in the Euphorie package whenever there is a matching message_id
 
 The script assumes
 - Euphorie and plonestatic.euphorie to be checked out in the src directory.
-- prototype to be recently updated so that the po files there are up to date.
+- prototype living in src/plonestatic.euphorie/var/prototype
+  It's okay if this is a symlink to somewhere else.
+- prototype to be recently updated so that the yaml files there are up to date.
+- the Euphorie po files to be recently updated
+  `make pot` in `src/Euphorie` seems to do the trick, though maybe it could be improved.
+  Currently any msgid that is not actually used in Euphorie gets turned into a comment (obsolete msgid).
 - that it gets called from within the buildout directory.
 
 NOTE:
