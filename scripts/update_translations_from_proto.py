@@ -1,6 +1,6 @@
 """ Take over proto translations to dev
 
-This script pulls the latest translations from prototype po files and updates 
+This script pulls the latest translations from prototype po files and updates
 the translations in the Euphorie package whenever there is a matching message_id.
 
 The script assumes
@@ -8,12 +8,12 @@ The script assumes
 - prototype to be recently updated so that the po files there are up to date.
 - that it gets called from within the buildout directory.
 
-NOTE: 
-It is possible that we are not using the correct message ids in dev, so even 
+NOTE:
+It is possible that we are not using the correct message ids in dev, so even
 if proto has a translation, it might not show in the UI of dev until we make that markup change.
 
 EXPLANATION:
-This Python script updates translation files for a project using data from two YAML files. 
+This Python script updates translation files for a project using data from two YAML files.
 Here’s a step-by-step summary:
 
 YAML Loading:
