@@ -97,14 +97,15 @@ for lang in sorted(os.listdir(i18n_euphorie)):
             if poentry and '${' in poentry.msgstr:
                 # euphorie has a variable in the msgstr. Skip
                 continue
-            if proto_data[entry].get(lang, '') == '':
-                # proto has nothing. Skip
+            proto_msgstr = proto_data[entry].get(lang, '')
+            if not proto_msgstr:
+                # proto has nothing. Could be empty string or None (null). Skip
                 continue
             if not poentry:
                 # euphorie doesn't have it. Add the entry to the po file
                 euphorie_po.append(polib.POEntry(
                     msgid=entry,
-                    msgstr=proto_data[entry].get(lang, '')
+                    msgstr=proto_msgstr
                 ))
                 add_counter += 1
             elif proto_data[entry].get(lang, '') == poentry.msgstr:
