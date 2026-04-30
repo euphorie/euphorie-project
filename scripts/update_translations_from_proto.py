@@ -101,6 +101,13 @@ for lang in sorted(os.listdir(i18n_euphorie)):
             if not proto_msgstr:
                 # proto has nothing. Could be empty string or None (null). Skip
                 continue
+            proto_english = proto_data[entry].get('en')
+            # Euphorie may be using a different msgid with the same Default.
+            poentry_default = euphorie_po.find(
+                f'Default: "{proto_english}"', by="comment"
+            )
+            if poentry_default and poentry and poentry_default.occurrences and not poentry.occurrences:
+                print(f"Warning: two msgids for same text: Proto='{entry}' / Euphorie='{poentry_default.msgid}' Default='{proto_english}'")
             if not poentry:
                 # euphorie doesn't have it.
                 # It might be there in an obsolete comment.  Remove that one
