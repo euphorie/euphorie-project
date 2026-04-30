@@ -121,6 +121,7 @@ for lang in sorted(os.listdir(i18n_euphorie)):
                 continue
             elif poentry.msgstr == '':
                 # euphorie was empty but proto has something. Add proto to euphorie
+                poentry.msgstr = proto_data[entry].get(lang, '')
                 was_empty_counter += 1
             else:
                 # euphorie had a different value from proto. Update euphorie
