@@ -1,9 +1,5 @@
 .PHONY: all
 all: .installed.cfg
-	@if [ -d py3 ]; then \
-		echo "You have a py3 virtualenv in this directory. Please remove it as we are now using .venv."; \
-		echo "Run 'rm -rf py3' to remove it."; \
-	fi
 
 .venv/bin/pip:
 	python3 -m venv .venv
