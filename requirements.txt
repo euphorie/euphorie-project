@@ -1,1 +1,7 @@
--r https://dist.plone.org/release/6.2.2/requirements.txt
+# Revert to use the link for Plone > 6.2.2
+# -r https://dist.plone.org/release/6.2.2/requirements.txt
+horse-with-no-namespace==20260202.0
+pip==26.2.2
+setuptools==81.0.0
+wheel==0.48.0
+zc.buildout==5.2.0
