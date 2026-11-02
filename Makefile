@@ -7,11 +7,11 @@ all: .installed.cfg
 .venv/bin/pip:
 	$(PYTHON) -m venv .venv
 
-.venv/bin/uv: .venv/bin/pip constraints.txt
-	.venv/bin/pip install -q uv -c constraints.txt
+.venv/bin/uv: .venv/bin/pip
+	.venv/bin/pip install -q uv
 
-.venv/bin/buildout: .venv/bin/uv requirements.txt constraints.txt
-	.venv/bin/uv pip install -qr requirements.txt -c constraints.txt
+.venv/bin/buildout: .venv/bin/uv requirements.txt
+	.venv/bin/uv pip install -qr requirements.txt
 
 .installed.cfg: .venv/bin/buildout $(BUILDOUT_CFGS)
 	./.venv/bin/buildout
