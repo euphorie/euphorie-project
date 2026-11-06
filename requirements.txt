@@ -1,5 +1,4 @@
 horse-with-no-namespace
 pip
 zc.buildout
--c https://raw.githubusercontent.com/collective/experimental-plone-pins/c17d7813d46a1d9981d715421a46582ad05b8fe4/plone62-py311+/constraints.txt
-
+-c profiles/constraints.txt

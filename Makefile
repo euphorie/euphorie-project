@@ -1,11 +1,18 @@
-PYTHON ?= python3
+PLONE_CONSTRAINTS = https://raw.githubusercontent.com/collective/experimental-plone-pins/c17d7813d46a1d9981d715421a46582ad05b8fe4/plone62-py311+/constraints.txt
+PYTHON ?= python3.14
 BUILDOUT_CFGS := $(wildcard *.cfg config/*.cfg profiles/*.cfg)
 
 .PHONY: all
 all: .installed.cfg
 
 .venv/bin/pip:
-	$(PYTHON) -m venv .venv
+	@if command -v uv >/dev/null 2>&1; then \
+		uv venv --python=$(PYTHON) --seed; \
+	elif command -v pipx >/dev/null 2>&1; then \
+		pipx run uv venv --python=$(PYTHON) --seed; \
+	else \
+		$(PYTHON) -m venv .venv; \
+	fi
 
 .venv/bin/uv: .venv/bin/pip
 	.venv/bin/pip install -q uv
@@ -66,3 +73,14 @@ graceful: .installed.cfg
 			sleep 30; \
 		done \
 	)
+
+.PHONY: update-pins
+update-pins: .venv/bin/uv  ## Resolve and update Python and buildout pins
+	mkdir -p tmp/update-pins
+	.venv/bin/uv venv tmp/update-pins/.venv --seed --allow-existing;
+	. tmp/update-pins/.venv/bin/activate && uv pip install uv -c "$(PLONE_CONSTRAINTS)"
+	. tmp/update-pins/.venv/bin/activate && uv pip install \
+		-r profiles/packages.txt -r "$(PLONE_CONSTRAINTS)"
+	. tmp/update-pins/.venv/bin/activate && uv pip freeze > profiles/constraints.txt;
+	./.venv/bin/uvx --from plone.releaser manage constraints2versions -p profiles/constraints.txt
+	mv profiles/versions.cfg config/versions.cfg
