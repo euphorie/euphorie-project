@@ -79,8 +79,9 @@ update-pins: .venv/bin/uv  ## Resolve and update Python and buildout pins
 	mkdir -p tmp/update-pins
 	.venv/bin/uv venv tmp/update-pins/.venv --seed --allow-existing;
 	. tmp/update-pins/.venv/bin/activate && uv pip install uv -c "$(PLONE_CONSTRAINTS)"
-	. tmp/update-pins/.venv/bin/activate && uv pip install \
-		-r profiles/packages.txt -r "$(PLONE_CONSTRAINTS)"
+	. tmp/update-pins/.venv/bin/activate && uv pip install --upgrade \
+		-r profiles/packages.txt \
+		-r "$(PLONE_CONSTRAINTS)"
 	. tmp/update-pins/.venv/bin/activate && uv pip freeze > profiles/constraints.txt;
 	./.venv/bin/uvx --from plone.releaser manage constraints2versions -p profiles/constraints.txt
 	mv profiles/versions.cfg config/versions.cfg
