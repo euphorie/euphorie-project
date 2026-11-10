@@ -1,4 +1,4 @@
-PLONE_CONSTRAINTS = https://raw.githubusercontent.com/collective/experimental-plone-pins/1d6822443a39d432b9a28bee9a5a948e5b175f70/plone62-py311+/constraints.txt
+PLONE_CONSTRAINTS = https://raw.githubusercontent.com/collective/experimental-plone-pins/e19348a8811de7b256f4ed8e207d25dfd2eab058/plone62-py311+/constraints.txt
 PYTHON ?= python3.14
 BUILDOUT_CFGS := $(wildcard *.cfg config/*.cfg profiles/*.cfg)
 
