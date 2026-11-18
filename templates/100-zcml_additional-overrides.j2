@@ -1,0 +1,13 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:db="http://namespaces.zope.org/db">
+
+<includeOverrides
+    package="euphorie.deployment"
+    file="overrides.zcml"
+    />
+<includeOverrides
+    package="{{ main_package }}"
+    file="overrides.zcml"
+    />
+
+</configure>

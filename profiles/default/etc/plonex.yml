@@ -1,0 +1,18 @@
+# Standard ZEO server and one foreground WSGI client under Supervisor.
+profiles:
+  - ../common
+  - repo: https://github.com/collective/plonex-profiles.git
+    ref: c3d225439c3fd57c7a80ffff247aa50cb062773d
+    path: zeo
+
++services:
+  - template:
+      run_for: supervisor
+      source_path: resource://plonex.services.supervisor.templates:program.conf.j2
+      target_path: tmp/supervisor/etc/supervisor/runwsgi.conf
+      options:
+        program: runwsgi
+        command: plonex instance start --name instance --port {{ http_port }}
+        process_name: runwsgi
+        directory: "{{ target }}"
+        priority: 2

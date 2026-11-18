@@ -8,7 +8,13 @@
 /develop-eggs/
 /eggs/
 /etc/*
+!/etc/plonex.yml
+!/etc/zcml/
+!/etc/templates/
+/etc/plonex.local.yml
+/etc/alembic.ini
 /parts/
 /py3
 /src/*
+/tmp/*
 /var/*
