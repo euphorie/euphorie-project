@@ -1,0 +1,6 @@
+# Run only the ZEO server; connect a separately managed client to it.
+profiles:
+  - ../common
+  - repo: https://github.com/collective/plonex-profiles.git
+    ref: c3d225439c3fd57c7a80ffff247aa50cb062773d
+    path: zeo

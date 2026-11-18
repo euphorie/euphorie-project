@@ -1,0 +1,42 @@
+# Shared application configuration for each runtime profile.
+profiles:
+  - repo: https://github.com/collective/plonex-profiles.git
+    ref: c3d225439c3fd57c7a80ffff247aa50cb062773d
+    path: base
+
+plonex_version: 0.1.0
+plone_version: 6.2-latest
+plonex_base_constraint: "{{ target }}/profiles/constraints.txt"
+
+main_package: Euphorie
+saconfig_uri: sqlite://
+sqlalchemy_echo: false
+
+pip_requirements:
+  - "{{ main_package }}"
+  - psycopg2-binary
+  - rich
+  - slowlog
+
++environment_vars:
+  ALLOWED_DISTRIBUTIONS: "classic"
+  PREFER_Z3C_PT: "1"
+  PYTHONWARNINGS: ignore:::pkg_resources
+  zope_i18n_compile_mo_files: "1"
+  PLONE_REGISTRY_YAML: "{{ target }}/etc/registry/registry.yaml"
+  UPGRADE_ZOPE_URL: "http://localhost:{{ http_port }}"
+
+upgrade_tempfile_auth: true
+
+zcml_additional:
+  - "{{ target }}/templates/100-zcml_additional-overrides.j2"
+  - "{{ target }}/templates/900-zcml_additional.j2"
+
++services:
+  - template:
+      run_for: [compile, runwsgi, fg, upgrade]
+      source_path: "{{ target }}/templates/alembic.ini.j2"
+      target_path: "{{ target }}/etc/alembic.ini"
+      options:
+        alembic_script_location: "{{ target }}/src/Euphorie/src/euphorie/deployment/upgrade/alembic"
+        saconfig_uri: "{{ saconfig_uri }}"

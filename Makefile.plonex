@@ -1,0 +1,44 @@
+PLONEX ?= plonex
+PYTHON ?= python3.14
+
+.PHONY: all init install upgrade clean read_registry alembic-config alembic-history alembic-revision alembic-upgrade restart graceful update-pins
+
+all: install
+
+init:
+	$(PLONEX) project init
+
+install:
+	$(PLONEX) sources clone
+	$(PLONEX) dependencies install --persist-local
+
+upgrade:
+	$(PLONEX) instance upgrade
+
+clean:
+	rm -rf .venv var/cache var/preparation var/plonex.yml var/gitman.yml tmp
+
+read_registry:
+	$(PLONEX) instance run scripts/read_registry.py etc/registry/*.xml
+
+alembic-history: alembic-config
+	./.venv/bin/alembic --config etc/alembic.ini history
+
+alembic-revision: alembic-config
+	./.venv/bin/alembic --config etc/alembic.ini revision --autogenerate
+
+alembic-upgrade: alembic-config
+	./.venv/bin/alembic --config etc/alembic.ini upgrade head
+
+alembic-config:
+	$(PLONEX) project compile
+
+restart:
+	$(PLONEX) supervisor restart
+
+graceful:
+	$(PLONEX) supervisor graceful
+
+update-pins:
+	$(PLONEX) dependencies install --persist-local
+	$(PLONEX) dependencies outdated
